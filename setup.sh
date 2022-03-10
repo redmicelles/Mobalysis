@@ -19,8 +19,15 @@ sudo -u postgres psql -c "create user mob_db_user  with password 'mob_db_pass';"
 
 echo "Postgresql installation completed"
 
-#create user and home directory 
-sudo useradd -m  mob_app_usr -p mob_app_usr
+#create user and home directory
+sudo useradd -m -p $(openssl passwd -crypt mob_app_usr) mob_app_usr
+if [ $? -eq 0 ]
+then
+  echo "User creation successful"
+else
+  echo "User creation failed"
+fi
+sudo usermod -aG sudo mob_app_usr
 
 #install python-venv
 res=$(python3 -c 'import sys; print(sys.version_info[0])')
@@ -51,4 +58,3 @@ sudo -u postgres psql <<EOF
 CREATE DATABASE Mobalytics; 
 ALTER DATABASE Mobalytics OWNER TO mob_db_user;
 EOF
-
